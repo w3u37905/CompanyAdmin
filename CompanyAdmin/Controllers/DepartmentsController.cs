@@ -9,41 +9,34 @@ namespace CompanyAdmin.Controllers
 {
     public class DepartmentsController : Controller
     {
-        // GET: Departments
-        public ActionResult Random()
-        {
-            var department = new Department() { Name = "Software", MaxEmployees = 20 };
 
-            return View(department);
+        private MyDBContext _context;
+
+        public DepartmentsController()
+        {
+            _context = new MyDBContext();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
         }
 
         public ViewResult Index()
         {
-            var departments = GetDepartments();
+            var departments = _context.Departments.ToList();
 
             return View(departments);
         }
 
-        //public ActionResult Details(int id)
+        //private IEnumerable<Department> GetDepartments()
         //{
-        //    var customer = GetDepartments().SingleOrDefault(c => c.Id == id);
-
-        //    if (customer == null)
-        //        return HttpNotFound();
-
-        //    return View(customer);
+        //    return new List<Department>
+        //    {
+        //        new Department { Id = 1, Name = "Software", MaxEmployees = 20 },
+        //        new Department { Id = 2, Name = "Hardware", MaxEmployees = 10 }
+        //    };
         //}
-
-        private IEnumerable<Department> GetDepartments()
-        {
-            return new List<Department>
-            {
-                new Department { Name = "Software", MaxEmployees = 20 },
-                new Department { Name = "Hardware", MaxEmployees = 10 }
-            };
-        }
-
-
 
     }
 }

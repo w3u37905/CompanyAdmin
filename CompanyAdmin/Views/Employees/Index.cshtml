@@ -31,8 +31,8 @@ else
                 <td>@employee.FirstName</td>
                 <td>@employee.LastName</td>
                 <td>@employee.EmailAddress</td>
-                <td>@employee.Birthdate</td>
-                <td>@employee.Department</td>
+                <td>@employee.Birthdate.ToShortDateString()</td>
+                <td>@employee.Department.Name</td>
             </tr>
             }
         </tbody>
