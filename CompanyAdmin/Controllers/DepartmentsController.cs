@@ -29,14 +29,41 @@ namespace CompanyAdmin.Controllers
             return View(departments);
         }
 
-        //private IEnumerable<Department> GetDepartments()
-        //{
-        //    return new List<Department>
-        //    {
-        //        new Department { Id = 1, Name = "Software", MaxEmployees = 20 },
-        //        new Department { Id = 2, Name = "Hardware", MaxEmployees = 10 }
-        //    };
-        //}
+
+        public ActionResult Edit(int id)
+        {
+            var department = _context.Departments.SingleOrDefault(c => c.Id == id);
+
+            if (department == null)
+                return HttpNotFound();
+
+            return View("DepartmentForm", department);
+        }
+
+        public ActionResult New()
+        {
+            var department = new Department();
+
+            return View("DepartmentForm", department);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Department department)
+        {
+            if (department.Id == 0)
+                _context.Departments.Add(department);
+            else
+            {
+                var departmentInDb = _context.Departments.Single(c => c.Id == department.Id);
+                departmentInDb.Name = department.Name;
+                departmentInDb.MaxEmployees = department.MaxEmployees;
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Departments");
+        }
+
 
     }
 }

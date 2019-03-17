@@ -151,6 +151,7 @@
     <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\MyDBContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\EmployeeFormViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\CompanyAdmin.Models.MyDBContext.mdf" />
@@ -196,10 +197,10 @@
     <Content Include="Views\Shared\_Menu.cshtml" />
     <Content Include="Views\Departments\Index.cshtml" />
     <Content Include="Views\Employees\Index.cshtml" />
+    <Content Include="Views\Departments\DepartmentForm.cshtml" />
+    <Content Include="Views\Employees\EmployeeForm.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

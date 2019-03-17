@@ -1,4 +1,5 @@
 ﻿using CompanyAdmin.Models;
+using CompanyAdmin.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -30,19 +31,57 @@ namespace CompanyAdmin.Controllers
             return View(employees);
         }
 
-        //private IEnumerable<Employee> GetEmployees()
-        //{
-        //    return new List<Employee>
-        //    {
-        //        new Employee
-        //        {
-        //            FirstName = "Menelaos",
-        //            LastName = "Giannopoulos",
-        //            EmailAddress = "megianno@gmail.com",
-        //            Birthdate = "19/05/1987"
-        //        }
-        //    };
-        //}
+        public ViewResult New()
+        {
+            var departments = _context.Departments.ToList();
+
+            var viewModel = new EmployeeFormViewModel
+            {
+                Departments = departments
+            };
+
+            return View("EmployeeForm", viewModel);
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var employee = _context.Employees.SingleOrDefault(c => c.Id == id);
+
+            if (employee == null)
+                return HttpNotFound();
+
+            var viewModel = new EmployeeFormViewModel
+            {
+                Employee = employee,
+                Departments = _context.Departments.ToList()
+            };
+
+            return View("EmployeeForm", viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Employee employee)
+        {
+            if (employee.Id == 0)
+            {
+                _context.Employees.Add(employee);
+            }
+            else
+            {
+                var employeeInDb = _context.Employees.Single(m => m.Id == employee.Id);
+                employeeInDb.FirstName = employee.FirstName;
+                employeeInDb.LastName = employee.LastName;
+                employeeInDb.EmailAddress = employee.EmailAddress;
+                employeeInDb.Birthdate = employee.Birthdate;
+                employeeInDb.DepartmentId = employee.DepartmentId;
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Employees");
+        }
+
+
 
     }
 }

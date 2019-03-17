@@ -8,6 +8,10 @@
 }
 
 <h2>Employees</h2>
+<p>
+    @Html.ActionLink("New Employee", "New", "Employees", null, new { @class = "btn btn-primary" })
+</p>
+
 @if (!Model.Any())
 {
     <p>There are not any Employees yet.</p>
@@ -28,7 +32,8 @@ else
             @foreach (var employee in Model)
             {
             <tr>
-                <td>@employee.FirstName</td>
+                @*<td>@employee.FirstName</td>*@
+                <td>@Html.ActionLink(employee.FirstName, "Edit", "Employees", new { id = employee.Id }, null)</td>
                 <td>@employee.LastName</td>
                 <td>@employee.EmailAddress</td>
                 <td>@employee.Birthdate.ToShortDateString()</td>

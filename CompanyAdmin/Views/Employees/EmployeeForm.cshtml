@@ -1,0 +1,36 @@
+﻿@model CompanyAdmin.ViewModels.EmployeeFormViewModel
+@{
+    /**/
+
+    ViewBag.Title = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Title</h2>
+
+@using (Html.BeginForm("Save", "Employees"))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Employee.FirstName)
+        @Html.TextBoxFor(m => m.Employee.FirstName, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Employee.LastName)
+        @Html.TextBoxFor(m => m.Employee.LastName, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Employee.EmailAddress)
+        @Html.TextBoxFor(m => m.Employee.EmailAddress, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Employee.Birthdate)
+        @Html.TextBoxFor(m => m.Employee.Birthdate, "{0:d MMM yyyy}", new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Employee.DepartmentId)
+        @Html.DropDownListFor(m => m.Employee.DepartmentId, new SelectList(Model.Departments, "Id", "Name"), "Select Department", new { @class = "form-control" })
+    </div>
+
+    @Html.HiddenFor(m => m.Employee.Id)
+    <button type="submit" class="btn btn-primary">Save</button>
+}
