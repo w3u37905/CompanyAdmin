@@ -1,0 +1,41 @@
+﻿@model IEnumerable<CompanyAdmin.Models.Employee>
+
+@{
+    /**/
+
+    ViewBag.Title = "Employees";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Employees</h2>
+@if (!Model.Any())
+{
+    <p>There are not any Employees yet.</p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Birthdate</th>
+                <th>Department</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+            <tr>
+                <td>@employee.FirstName</td>
+                <td>@employee.LastName</td>
+                <td>@employee.EmailAddress</td>
+                <td>@employee.Birthdate</td>
+                <td>@employee.Department</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
