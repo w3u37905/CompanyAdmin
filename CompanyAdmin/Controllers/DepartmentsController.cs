@@ -64,6 +64,18 @@ namespace CompanyAdmin.Controllers
             return RedirectToAction("Index", "Departments");
         }
 
+        [HttpPost]    
+        public void Delete(int id)
+        {
+            var department = _context.Departments.SingleOrDefault(c => c.Id == id);
+
+            if (department == null)
+                return;
+
+            _context.Departments.Remove(department);
+            _context.SaveChanges();
+
+        }
 
     }
 }
