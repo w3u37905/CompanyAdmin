@@ -81,6 +81,17 @@ namespace CompanyAdmin.Controllers
             return RedirectToAction("Index", "Employees");
         }
 
+        [HttpPost]
+        public void Delete(int id)
+        {
+            var employee = _context.Employees.SingleOrDefault(c => c.Id == id);
+
+            if (employee == null)
+                return;
+
+            _context.Employees.Remove(employee);
+            _context.SaveChanges();
+        }
 
 
     }
