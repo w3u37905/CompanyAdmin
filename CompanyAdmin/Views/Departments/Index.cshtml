@@ -34,18 +34,18 @@ else
         <tbody>
             @foreach (var department in Model)
             {
-            <tr>
-                <td>@department.Name</td>
-                <td>@department.MaxEmployees</td>
-                <td>
-                    <a href="#" class="btn btn-success" onclick="EditDepartment(@department.Id)">
-                        <i class="glyphicon glyphicon-pencil"></i>
-                    </a>
-                    <a data-department-id="@department.Id" class="btn btn-danger js-delete">
-                        <i class="glyphicon glyphicon-remove"></i>
-                    </a>
-                </td>
-            </tr>
+                <tr id="row_@department.Id">
+                    <td>@department.Name</td>
+                    <td>@department.MaxEmployees</td>
+                    <td>
+                        <a href="#" class="btn btn-success" onclick="EditDepartment(@department.Id)">
+                            <i class="glyphicon glyphicon-pencil"></i>
+                        </a>
+                        <a href="#" class="btn btn-danger" onclick="ConfirmDelete(@department.Id)">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </a>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
@@ -54,7 +54,7 @@ else
 }
 <div class="modal fade" id="addEditDepartmentModal">
     <div class="modal-dialog" style="width:300px;">
-        <div class="modal-content" >
+        <div class="modal-content">
             <div class="modal-header">
                 <a href="#" class="close" data-dismiss="modal">&times;</a>
                 <h3 class="modal-title">Add/Edit Department</h3>
@@ -68,51 +68,84 @@ else
 </div>
 
 
+
+<div class="modal fade" id="deleteDepartmentModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+                <h3 class="modal-title">Delete Department</h3>
+            </div>
+            <div class="modal-body">
+                <h4>Are you sure you want to delete this department? </h4>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-default" data-dismiss="modal">Cancel</a>
+                <a href="#" class="btn btn-success" onclick="DeleteDepartment()">Confirm</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<input type="hidden" id="hiddenDepartmentId" />
+
+
 @section scripts
 {
 
-<script>
-    $(document).ready(function () {
-        $("#departments").on("click", ".js-delete", function () {
-            var button = $(this);
+    <script>
 
-            if (confirm("Are you sure you want to delete this department?")) {
-                $.ajax({
-                    url: '@Url.Action("Delete", "Departments")',
-                    data: { id: button.attr("data-department-id") },
-                    method: 'POST',
-                    success: function () {
-                        button.parents("tr").remove();
+        var NewDepartment = function () {
+
+            var url = "/Departments/New";
+
+            $("#addEditDepartmentModalBodyDiv").load(url, function () {
+                $("#addEditDepartmentModal").modal("show");
+
+            })
+        }
+
+        var EditDepartment = function (Id) {
+
+            var url = "/Departments/Edit?Id=" + Id;
+
+            $("#addEditDepartmentModalBodyDiv").load(url, function () {
+                $("#addEditDepartmentModal").modal("show");
+
+            })
+
+        }
+
+
+        var ConfirmDelete = function (Id) {
+
+            $("#hiddenDepartmentId").val(Id);
+            $("#deleteDepartmentModal").modal('show');
+
+        }
+
+        var DeleteDepartment = function () {
+
+            var departmentId = $("#hiddenDepartmentId").val();
+
+            $.ajax({
+
+                type: "POST",
+                url: "/Departments/Delete",
+                data: { id: departmentId },
+                success: function (result) {
+                    $("#deleteDepartmentModal").modal("hide");
+                    if (result == true) {
+                        $("#row_" + departmentId).remove();
                     }
-                });
-            }
-        });
-    });
-
-
-    var NewDepartment=function(){
-    
-        var url="/Departments/New";
-
-        $("#addEditDepartmentModalBodyDiv").load(url,function(){
-            $("#addEditDepartmentModal").modal("show");
-        
-        })
-    }
-
-    var EditDepartment = function (Id) {
-
-        var url = "/Departments/Edit?Id=" + Id;
-
-        $("#addEditDepartmentModalBodyDiv").load(url, function () {
-            $("#addEditDepartmentModal").modal("show");
-
-        })
-
-    }
+                }
+            })
+        }
 
 
 
-</script>
+    </script>
 
 }

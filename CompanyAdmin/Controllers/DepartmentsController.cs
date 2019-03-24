@@ -47,7 +47,6 @@ namespace CompanyAdmin.Controllers
             return PartialView("DepartmentForm", department);
         }
 
-        [HttpPost]
         public ActionResult Save(Department department)
         {
             if (department.Id == 0)
@@ -64,17 +63,26 @@ namespace CompanyAdmin.Controllers
             return RedirectToAction("Index", "Departments");
         }
 
-        [HttpPost]    
-        public void Delete(int id)
+        public JsonResult Delete(int id)
         {
+            bool result = false; 
             var department = _context.Departments.SingleOrDefault(c => c.Id == id);
+                       
 
-            if (department == null)
-                return;
+            if (department != null)
+            {
+                bool existsAssignedEmployees = _context.Employees.Any(x => x.DepartmentId == id);
 
-            _context.Departments.Remove(department);
-            _context.SaveChanges();
+                // a department can only be deleted when there are no employees assigned to it.
+                if (!existsAssignedEmployees)
+                {
+                    _context.Departments.Remove(department);
+                    _context.SaveChanges();
+                    result = true; 
+                }
+            }
 
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
     }
