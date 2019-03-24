@@ -37,14 +37,14 @@ namespace CompanyAdmin.Controllers
             if (department == null)
                 return HttpNotFound();
 
-            return View("DepartmentForm", department);
+            return PartialView("DepartmentForm", department);
         }
 
         public ActionResult New()
         {
             var department = new Department();
 
-            return View("DepartmentForm", department);
+            return PartialView("DepartmentForm", department);
         }
 
         [HttpPost]

@@ -31,7 +31,7 @@ namespace CompanyAdmin.Controllers
             return View(employees);
         }
 
-        public ViewResult New()
+        public ActionResult New()
         {
             var departments = _context.Departments.ToList();
 
@@ -40,7 +40,7 @@ namespace CompanyAdmin.Controllers
                 Departments = departments
             };
 
-            return View("EmployeeForm", viewModel);
+            return PartialView("EmployeeForm", viewModel);
         }
 
         public ActionResult Edit(int id)
@@ -56,7 +56,7 @@ namespace CompanyAdmin.Controllers
                 Departments = _context.Departments.ToList()
             };
 
-            return View("EmployeeForm", viewModel);
+            return PartialView("EmployeeForm", viewModel);
         }
 
         [HttpPost]

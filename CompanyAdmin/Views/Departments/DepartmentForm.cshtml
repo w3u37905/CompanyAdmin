@@ -1,13 +1,8 @@
 ﻿@model CompanyAdmin.Models.Department
-@{
-                /**/
 
-                ViewBag.Title = "New";
-                Layout = "~/Views/Shared/_Layout.cshtml";
-}
+@*<h2>New Department</h2>*@
 
-<h2>New Department</h2>
-
+<div style="align-content:center"> 
 @using (Html.BeginForm("Save", "Departments"))
 {
     <div class="form-group">
@@ -20,6 +15,8 @@
     </div>
 
     @Html.HiddenFor(m => m.Id)
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-success">Save</button>
+
 }
 
+</div>
