@@ -59,15 +59,39 @@ namespace CompanyAdmin.Controllers
             return PartialView("EmployeeForm", viewModel);
         }
 
-        [HttpPost]
+        private bool IsDepartmentFull(int departmentId)
+        {
+            var departmentEmployeesNumber = _context.Employees.Count(x => x.DepartmentId == departmentId);
+            var department = _context.Departments.SingleOrDefault(x => x.Id == departmentId);
+
+            if (department.MaxEmployees == departmentEmployeesNumber)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public ActionResult Save(Employee employee)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Index", "Employees");
+            }
+
+
             if (employee.Id == 0)
             {
+                if (IsDepartmentFull(employee.DepartmentId))
+                {
+                    // employee can not be assigned to department
+                    return RedirectToAction("Index", "Employees");
+                }
+
                 _context.Employees.Add(employee);
             }
             else
-            {
+            {               
                 var employeeInDb = _context.Employees.Single(m => m.Id == employee.Id);
                 employeeInDb.FirstName = employee.FirstName;
                 employeeInDb.LastName = employee.LastName;
@@ -81,7 +105,6 @@ namespace CompanyAdmin.Controllers
             return RedirectToAction("Index", "Employees");
         }
 
-        [HttpPost]
         public void Delete(int id)
         {
             var employee = _context.Employees.SingleOrDefault(c => c.Id == id);

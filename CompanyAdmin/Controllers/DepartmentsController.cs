@@ -49,10 +49,23 @@ namespace CompanyAdmin.Controllers
 
         public ActionResult Save(Department department)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Index", "Departments");
+            }
+
             if (department.Id == 0)
                 _context.Departments.Add(department);
             else
             {
+                var departmentEmployeesNumber = _context.Employees.Count(x => x.DepartmentId == department.Id);
+                //max-employees value cannot be lower than current number of assigned employees
+                if (departmentEmployeesNumber > department.MaxEmployees)
+                {
+                    return RedirectToAction("Index", "Departments");
+                }
+
                 var departmentInDb = _context.Departments.Single(c => c.Id == department.Id);
                 departmentInDb.Name = department.Name;
                 departmentInDb.MaxEmployees = department.MaxEmployees;
