@@ -38,6 +38,7 @@ namespace CompanyAdmin.Controllers
 
             var viewModel = new EmployeeFormViewModel
             {
+                Employee = new Employee(),
                 Departments = departments
             };
 
