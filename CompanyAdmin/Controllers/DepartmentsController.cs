@@ -1,4 +1,5 @@
 ﻿using CompanyAdmin.Models;
+using CompanyAdmin.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +11,22 @@ namespace CompanyAdmin.Controllers
     public class DepartmentsController : Controller
     {
 
-        private MyDBContext _context;
+        private IDepartmentRepository departmentRepository;
+        private IEmployeeRepository employeeRepository;
 
-        public DepartmentsController()
-        {
-            _context = new MyDBContext();
-        }
 
-        protected override void Dispose(bool disposing)
+
+        public DepartmentsController(IDepartmentRepository departmentRepository,
+            IEmployeeRepository employeeRepository)
         {
-            _context.Dispose();
-        }
+            this.departmentRepository = departmentRepository;
+            this.employeeRepository = employeeRepository;
+        }    
+
 
         public ViewResult Index()
         {
-            var departments = _context.Departments.ToList();
+            var departments = departmentRepository.GetAll();
 
             return View(departments);
         }
@@ -32,7 +34,7 @@ namespace CompanyAdmin.Controllers
 
         public ActionResult Edit(int id)
         {
-            var department = _context.Departments.SingleOrDefault(c => c.Id == id);
+            var department = departmentRepository.GetById(id);
 
             if (department == null)
                 return HttpNotFound();
@@ -56,41 +58,43 @@ namespace CompanyAdmin.Controllers
             }
 
             if (department.Id == 0)
-                _context.Departments.Add(department);
+            {
+                departmentRepository.Insert(department);
+            }                
             else
             {
-                var departmentEmployeesNumber = _context.Employees.Count(x => x.DepartmentId == department.Id);
+                var departmentEmployeesNumber = employeeRepository.GetAll().Count(x => x.DepartmentId == department.Id);
                 //max-employees value cannot be lower than current number of assigned employees
                 if (departmentEmployeesNumber > department.MaxEmployees)
                 {
                     return RedirectToAction("Index", "Departments");
                 }
 
-                var departmentInDb = _context.Departments.Single(c => c.Id == department.Id);
+                var departmentInDb = departmentRepository.GetById(department.Id);
                 departmentInDb.Name = department.Name;
                 departmentInDb.MaxEmployees = department.MaxEmployees;
             }
 
-            _context.SaveChanges();
+            departmentRepository.Save();
 
             return RedirectToAction("Index", "Departments");
         }
 
         public JsonResult Delete(int id)
         {
-            bool result = false; 
-            var department = _context.Departments.SingleOrDefault(c => c.Id == id);
+            bool result = false;
+            var department = departmentRepository.GetById(id);
                        
 
             if (department != null)
             {
-                bool existsAssignedEmployees = _context.Employees.Any(x => x.DepartmentId == id);
+                bool existsAssignedEmployees = employeeRepository.GetAll().Any(x => x.DepartmentId == id);
 
                 // a department can only be deleted when there are no employees assigned to it.
                 if (!existsAssignedEmployees)
                 {
-                    _context.Departments.Remove(department);
-                    _context.SaveChanges();
+                    departmentRepository.Delete(id);
+                    departmentRepository.Save();
                     result = true; 
                 }
             }

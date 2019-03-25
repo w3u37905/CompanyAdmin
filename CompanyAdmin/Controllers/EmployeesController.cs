@@ -1,4 +1,5 @@
 ﻿using CompanyAdmin.Models;
+using CompanyAdmin.Repositories;
 using CompanyAdmin.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -12,28 +13,28 @@ namespace CompanyAdmin.Controllers
     public class EmployeesController : Controller
     {
 
-        private MyDBContext _context;
+        private IDepartmentRepository departmentRepository;
+        private IEmployeeRepository employeeRepository;
 
-        public EmployeesController()
+
+        public EmployeesController(IDepartmentRepository departmentRepository,
+            IEmployeeRepository employeeRepository)
         {
-            _context = new MyDBContext();
+            this.departmentRepository = departmentRepository;
+            this.employeeRepository = employeeRepository;
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            _context.Dispose();
-        }
 
         public ViewResult Index()
         {
-            var employees = _context.Employees.Include(c => c.Department).ToList();
+            var employees = employeeRepository.GetAll();
 
             return View(employees);
         }
 
         public ActionResult New()
         {
-            var departments = _context.Departments.ToList();
+            var departments = departmentRepository.GetAll();
 
             var viewModel = new EmployeeFormViewModel
             {
@@ -45,7 +46,7 @@ namespace CompanyAdmin.Controllers
 
         public ActionResult Edit(int id)
         {
-            var employee = _context.Employees.SingleOrDefault(c => c.Id == id);
+            var employee = employeeRepository.GetById(id);
 
             if (employee == null)
                 return HttpNotFound();
@@ -53,7 +54,7 @@ namespace CompanyAdmin.Controllers
             var viewModel = new EmployeeFormViewModel
             {
                 Employee = employee,
-                Departments = _context.Departments.ToList()
+                Departments = departmentRepository.GetAll()
             };
 
             return PartialView("EmployeeForm", viewModel);
@@ -61,8 +62,8 @@ namespace CompanyAdmin.Controllers
 
         private bool IsDepartmentFull(int departmentId)
         {
-            var departmentEmployeesNumber = _context.Employees.Count(x => x.DepartmentId == departmentId);
-            var department = _context.Departments.SingleOrDefault(x => x.Id == departmentId);
+            var departmentEmployeesNumber = employeeRepository.GetAll().Count(x => x.DepartmentId == departmentId);
+            var department = departmentRepository.GetById(departmentId);
 
             if (department.MaxEmployees == departmentEmployeesNumber)
             {
@@ -88,11 +89,11 @@ namespace CompanyAdmin.Controllers
                     return RedirectToAction("Index", "Employees");
                 }
 
-                _context.Employees.Add(employee);
+                employeeRepository.Insert(employee);
             }
             else
-            {               
-                var employeeInDb = _context.Employees.Single(m => m.Id == employee.Id);
+            {
+                var employeeInDb = employeeRepository.GetById(employee.Id);
                 employeeInDb.FirstName = employee.FirstName;
                 employeeInDb.LastName = employee.LastName;
                 employeeInDb.EmailAddress = employee.EmailAddress;
@@ -100,20 +101,20 @@ namespace CompanyAdmin.Controllers
                 employeeInDb.DepartmentId = employee.DepartmentId;
             }
 
-            _context.SaveChanges();
+            employeeRepository.Save();
 
             return RedirectToAction("Index", "Employees");
         }
 
         public void Delete(int id)
         {
-            var employee = _context.Employees.SingleOrDefault(c => c.Id == id);
+            var employee = employeeRepository.GetById(id);
 
             if (employee == null)
                 return;
 
-            _context.Employees.Remove(employee);
-            _context.SaveChanges();
+            employeeRepository.Delete(id);
+            employeeRepository.Save();
         }
 
 
